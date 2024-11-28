@@ -6,7 +6,7 @@
 /*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 14:30:22 by aboumall          #+#    #+#             */
-/*   Updated: 2024/11/28 17:18:05 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/11/28 17:51:58 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,21 +135,17 @@ int     print_nbase(int num, char *base, t_flags flags)
         int     printed;
 
         base_len = ft_strlen(base);
-        printf("BASE_LEN %d\n", base_len);
         printed = 0;
         if (num < 0)
         {
                 if (!flags.zero || flags.minus)
-                        print_nchar('-', 1);
+                        printed += print_nchar('-', 1);
 		num = -num;
         }
-	if (num < base_len)
-	{
-		printed += write(1, base[num + '0'], 1);
-		return (printed);
-	}
-	ft_putnbr_fd(num / base_len, 1);
-	ft_putnbr_fd(num % base_len, 1);
+        if (num >= base_len)
+                printed += print_nbase(num / base_len, base, flags);
+        printed += write(1, &base[num % base_len], 1);
+        return (printed);
 }
 
 size_t  num_len_base(int num, int base_len)
@@ -178,10 +174,12 @@ int     print_flags_nbase(t_flags flags, va_list args, char *base)
 
         printed = 0;
         // num = va_arg(args, int);
-        num = 254;
+        num = 255;
         len = num_len_base(num, ft_strlen(base));
         if (flags.space && !(flags.padding > len))
                 printed += print_nchar(' ', 1);
+        if (flags.hash && (flags.specifier == 'x' || flags.specifier == 'X'))
+                len += 2;
         if (flags.padding > len)
         {
                 if (flags.minus)
@@ -201,7 +199,7 @@ int     print_flags_nbase(t_flags flags, va_list args, char *base)
                 printed += print_nbase(num, base, flags);
                 return (printed);
         }
-                printf("NUM [%d], BASE [%s]\n", num, base);
+        printf("NUM [%d], BASE [%s]\n", num, base);
         printed += print_nbase(num, base, flags);
         return (printed);
 }
@@ -219,16 +217,16 @@ int     print_flags(t_flags flags, va_list args)
 }
 
 int main() {
-        const char *format = "%x";
-        va_list args;
+        // const char *format = "%X";
+        // va_list args;
 
-        printf("Format à analyser : \"%s\"\n", format);
+        // printf("Format à analyser : \"%s\"\n", format);
 
-        t_flags flags;
+        // t_flags flags;
         
-        trait_flags(&format, args, &flags);
-        print_flags(flags, args);
-        printf("\n");
+        // trait_flags(&format, args, &flags);
+        // print_flags(flags, args);
+        // printf("\n");
 
         // printf("Résultat de l'analyse des flags :\n");
         // printf("  minus      = %d\n", flags.minus);
@@ -242,7 +240,7 @@ int main() {
 
         // printf("%10.3s<\n", "hello");
         // printf("% 010d<\n", 85);
-        // printf("%010d<\n", -85);
+        printf("%#x<\n", 255);
 
         // print_nbase(19558, "0123456789");
 
