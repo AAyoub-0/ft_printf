@@ -1,24 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libftprintf.h                                      :+:      :+:    :+:   */
+/*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aayoub <aayoub@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 14:24:25 by aboumall          #+#    #+#             */
-/*   Updated: 2024/11/28 17:45:10 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/12/01 18:03:31 by aayoub           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBFTPRINTF
-# define LIBFTPRINTF
+#ifndef FT_PRINTF_H
+# define FT_PRINTF_H
 
 # include "../libft/libft.h"
 # include <stdarg.h>
 # include <stdio.h>
 # include <unistd.h>
-
-static char	*flags = "-0.# +";
 
 typedef struct s_flags
 {
@@ -31,5 +29,7 @@ typedef struct s_flags
 	int		precision;
 	char	specifier;
 }			t_flags;
+
+int		ft_printf(const char *format, ...);
 
 #endif

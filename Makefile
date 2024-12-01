@@ -1,10 +1,13 @@
 NAME = libftprintf.a
 
-HEAD = libftprintf.h
+HEAD = ft_printf.h
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror
+
+LIBFT_DIR = ./libft
+LIBFT = $(LIBFT_DIR)/libft.a
 
 SRC = ft_printf.c
 
@@ -12,11 +15,14 @@ OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
-	ar rcs $@ $(OBJ)
+$(NAME): $(OBJ) $(HEAD) $(LIBFT)
+	cp $(LIBFT) $(NAME)
+	ar rcs $(NAME) $(OBJ)
+# $(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT)
 
-./%.o: ./%.c $(HEAD) Makefile
-	$(CC) -o $@ -c $< $(CFLAGS)
+
+./%.o: ./%.c $(HEAD) Makefile $(LIBFT)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJ)
