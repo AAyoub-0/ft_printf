@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aayoub <aayoub@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 14:30:22 by aboumall          #+#    #+#             */
-/*   Updated: 2024/12/01 18:03:03 by aayoub           ###   ########.fr       */
+/*   Updated: 2024/12/02 15:13:02 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,11 @@ int     print_flags_str(t_flags flags, va_list args)
 
         printed = 0;
         str = va_arg(args, char *);
-        // str = "Hello World!";
         if (!str)
-                return (0);
+        {
+                ft_putstr_fd("(null)", 1);
+                return (6);
+        }
         len = ft_strlen(str);
         if (flags.precision >= 0)
                 len = flags.precision;
@@ -115,19 +117,13 @@ int     print_flags_str(t_flags flags, va_list args)
         return (printed);
 }
 
-int     print_nbase(long long num, char *base, t_flags flags)
+int     print_nbase(unsigned long num, char *base, t_flags flags)
 {
-        long long     base_len;
+        unsigned long     base_len;
         int     printed;
-
+        
         base_len = ft_strlen(base);
         printed = 0;
-        if (num < 0)
-        {
-                if (!flags.zero || flags.minus)
-                        printed += print_nchar('-', 1);
-		num = -num;
-        }
         if (num >= base_len)
                 printed += print_nbase(num / base_len, base, flags);
         printed += write(1, &base[num % base_len], 1);
@@ -152,19 +148,21 @@ size_t  num_len_base(long long num, int base_len)
         return (size);
 }
 
-int     print_flags_unbase(t_flags flags, va_list args, char *base)
+int     print_flags_unbase(t_flags flags, unsigned long num, char *base)
 {
         int     printed;
         int     len;
-        unsigned int     num;
 
         printed = 0;
-        num = va_arg(args, int);
-        // num = -255;
         len = num_len_base(num, ft_strlen(base));
+        if (flags.specifier == 'p' && num == 0)
+        {
+                ft_putstr_fd("(nil)", 1);
+                return (5);               
+        }
         if (flags.hash && (flags.specifier == 'x' || flags.specifier == 'X'))
                 len += 2;
-        if (flags.hash && (flags.specifier == 'x'))
+        if ((flags.hash && (flags.specifier == 'x')) || flags.specifier == 'p')
                 printed += write(1, "0x", 2);
         else if (flags.hash && (flags.specifier == 'X'))
                 printed += write(1, "0X", 2);
@@ -187,29 +185,31 @@ int     print_flags_unbase(t_flags flags, va_list args, char *base)
         return (printed);
 }
 
-int     is_space_written(t_flags flags, int len)
+int     need_write_space(t_flags flags, int len)
 {
         return (flags.space && (!(flags.padding > len) || (flags.minus && flags.padding > len)));
 }
 
-int     print_flags_snbase(t_flags flags, va_list args, char *base)
+int     print_flags_snbase(t_flags flags, long num, char *base)
 {
         int     printed;
         int     len;
-        int     num;
 
         printed = 0;
-        num = va_arg(args, int);
-        // num = 255;
         len = num_len_base(num, ft_strlen(base));
-        if (is_space_written(flags, len))
+        if (need_write_space(flags, len))
                 printed += print_nchar(' ', 1);
+        if (!flags.zero && num < 0)
+        {
+                printed += print_nchar('-', 1);
+                num = -num;
+        }
         if (flags.padding > len)
         {
                 if (flags.minus)
                 {
-                        printed += print_nbase(num, base, flags);
-                        printed += print_nchar(' ', flags.padding - len - is_space_written(flags, len));
+                        printed += print_nbase((unsigned long)num, base, flags);
+                        printed += print_nchar(' ', flags.padding - len - need_write_space(flags, len));
                         return (printed);
                 }
                 if (flags.zero)
@@ -220,10 +220,10 @@ int     print_flags_snbase(t_flags flags, va_list args, char *base)
                 }
                 else
                         printed += print_nchar(' ', flags.padding - len);
-                printed += print_nbase(num, base, flags);
+                printed += print_nbase((unsigned long)num, base, flags);
                 return (printed);
         }
-        printed += print_nbase(num, base, flags);
+        printed += print_nbase((unsigned long)num, base, flags);
         return (printed);
 }
 
@@ -236,13 +236,15 @@ int     print_flags(t_flags flags, va_list args)
         if (flags.specifier == 's')
                 return (print_flags_str(flags, args));
         if (flags.specifier == 'd' || flags.specifier == 'i')
-                return (print_flags_snbase(flags, args, "0123456789"));
+                return (print_flags_snbase(flags, va_arg(args, int), "0123456789"));
         if (flags.specifier == 'u')
-                return (print_flags_unbase(flags, args, "0123456789"));
+                return (print_flags_unbase(flags, va_arg(args, unsigned int), "0123456789"));
         if (flags.specifier == 'x')
-                return (print_flags_unbase(flags, args, "0123456789abcdef"));
+                return (print_flags_unbase(flags, va_arg(args, unsigned int), "0123456789abcdef"));
         if (flags.specifier == 'X')
-                return (print_flags_unbase(flags, args, "0123456789ABCDEF"));
+                return (print_flags_unbase(flags, va_arg(args, unsigned int), "0123456789ABCDEF"));
+        if (flags.specifier == 'p')
+                return (print_flags_unbase(flags, (unsigned long)va_arg(args, void *), "0123456789abcdef"));
         return (0);
 }
 
@@ -273,96 +275,110 @@ int     ft_printf(const char *format, ...)
 // {
 //         int     ft_result;
 //         int     result;
-//         char    world[] = "World"; 
-//         char    w = 'w';
-//         int     psn = 255;
-//         int     nsn = -255;
-//         unsigned int    pun = -255;
-//         unsigned int    sun = INT_MAX;
+//         // char    world[] = "World"; 
+//         // char    w = 'w';
+//         // int     psn = 255;
+//         // int     nsn = -255;
+//         // unsigned int    pun = -255;
+//         // unsigned int    sun = INT_MAX;
 
-//         puts("--------- Char test ----------\n");
-//         result = printf("Hello %corld\n", w);
-//         ft_result = ft_printf("Hello %corld\n", w);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Char test ----------\n");
+//         // result = printf("Hello %corld\n", w);
+//         // ft_result = ft_printf("Hello %corld\n", w);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- String test ----------\n");
-//         result = printf("Hello %s\n", world);
-//         ft_result = ft_printf("Hello %s\n", world);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- String test ----------\n");
+//         // result = printf("Hello %s\n", world);
+//         // ft_result = ft_printf("Hello %s\n", world);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Int test ----------\n");
-//         result = printf("Hello %d\n", psn);
-//         ft_result = ft_printf("Hello %d\n", psn);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Int test ----------\n");
+//         // result = printf("Hello %d\n", INT_MIN);
+//         // ft_result = ft_printf("Hello %d\n", INT_MIN);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Unsigned Int test ----------\n");
-//         result = printf("Hello %d\n", nsn);
-//         ft_result = ft_printf("Hello %d\n", nsn);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Unsigned Int test ----------\n");
+//         // result = printf("Hello %d\n", nsn);
+//         // ft_result = ft_printf("Hello %d\n", nsn);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Unsigned Int test ----------\n");
-//         result = printf("Hello %u\n", pun);
-//         ft_result = ft_printf("Hello %u\n", pun);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Unsigned Int test ----------\n");
+//         // result = printf("Hello %u\n", pun);
+//         // ft_result = ft_printf("Hello %u\n", pun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Unsigned Int test ----------\n");
-//         result = printf("Hello %u\n", sun);
-//         ft_result = ft_printf("Hello %u\n", sun);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Unsigned Int test ----------\n");
+//         // result = printf("Hello %u\n", sun);
+//         // ft_result = ft_printf("Hello %u\n", sun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Hex test ----------\n");
-//         result = printf("Hello %x\n", sun);
-//         ft_result = ft_printf("Hello %x\n", sun);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Hex test ----------\n");
+//         // result = printf("Hello %x\n", sun);
+//         // ft_result = ft_printf("Hello %x\n", sun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Test with multiple flags ----------\n");
-//         result = printf("Hello %10.5d<end\n", sun);
-//         ft_result = ft_printf("Hello %10.5d<end\n", sun);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Pointers test ----------\n");
+//         // result = printf("Hello %p<end\n", &sun);
+//         // ft_result = ft_printf("Hello %p<end\n", &sun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Test with multiple flags ----------\n");
-//         result = printf("Hello %-10.5d<end\n", sun);
-//         ft_result = ft_printf("Hello %-10.5d<end\n", sun);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Pointers test ----------\n");
+//         // result = printf("Hello %p<end\n", (void *)LONG_MAX);
+//         // ft_result = ft_printf("Hello %p<end\n", LONG_MAX);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Test with multiple flags ----------\n");
-//         result = printf("Hello %10.5u<end\n", sun);
-//         ft_result = ft_printf("Hello %10.5u<end\n", sun);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Test with multiple flags ----------\n");
+//         // result = printf("Hello %10.5d<end\n", sun);
+//         // ft_result = ft_printf("Hello %10.5d<end\n", sun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Test with multiple flags ----------\n");
-//         result = printf("Hello %-10.5u<end\n", sun);
-//         ft_result = ft_printf("Hello %-10.5u<end\n", sun);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Test with multiple flags ----------\n");
+//         // result = printf("Hello %-10.5d<end\n", sun);
+//         // ft_result = ft_printf("Hello %-10.5d<end\n", sun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
-//         puts("--------- Test with multiple flags ----------\n");
-//         result = printf("Hello %-#50.5x<end\n", sun);
-//         ft_result = ft_printf("Hello %-#50.5x<end\n", sun);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Test with multiple flags ----------\n");
+//         // result = printf("Hello %10.5u<end\n", sun);
+//         // ft_result = ft_printf("Hello %10.5u<end\n", sun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
+
+//         // puts("--------- Test with multiple flags ----------\n");
+//         // result = printf("Hello %-10.5u<end\n", sun);
+//         // ft_result = ft_printf("Hello %-10.5u<end\n", sun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
+
+//         // puts("--------- Test with multiple flags ----------\n");
+//         // result = printf("Hello %-#50.5x<end\n", sun);
+//         // ft_result = ft_printf("Hello %-#50.5x<end\n", sun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
 //         // puts("--------- Test with invalid specifier ----------\n");
 //         // result = printf("Hello %50-.5i<end\n", sun);
