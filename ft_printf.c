@@ -6,11 +6,29 @@
 /*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 14:30:22 by aboumall          #+#    #+#             */
-/*   Updated: 2024/12/02 15:13:02 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/12/04 13:40:09 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+
+size_t  num_len_base(long long num, int base_len)
+{
+        size_t  size;
+
+        size = 0;
+        if (num < 0)
+        {
+                size++;
+                num = -num;
+        }
+        while (num > 0)
+        {
+                num = num / base_len;
+                size++; 
+        }
+        return (size);
+}
 
 int	is_flag(char c)
 {
@@ -18,35 +36,9 @@ int	is_flag(char c)
 		|| c == '+');
 }
 
-void	set_flags(t_flags *flags)
-{
-	flags->minus = 0;
-	flags->zero = 0;
-	flags->precision = -1;
-	flags->hash = 0;
-	flags->space = 0;
-	flags->plus = 0;
-	flags->padding = 0;
-	flags->specifier = 0;
-}
-
-int	get_number(const char **str)
-{
-	int	result;
-
-	result = 0;
-	while (*(*str) && ft_isdigit(*(*str)))
-	{
-		result = result * 10 + (*(*str) - '0');
-		(*str)++;
-	}
-	return (result);
-}
-
 void	trait_flags(const char **str, t_flags *flags)
 {
 	set_flags(flags);
-	(*str)++;
 	while (is_flag(*(*str)))
 	{
 		if (*(*str) == '-')
@@ -71,160 +63,6 @@ void	trait_flags(const char **str, t_flags *flags)
 		flags->precision = get_number(str);
 	}
 	flags->specifier = *(*str);
-}
-
-int     print_nchar(char c, int n)
-{
-        int     printed;
-
-        if (n < 0)
-                return (0);
-        printed = 0;
-        while (printed < n)
-                printed += write(1, &c, 1);   
-        return (printed);          
-}
-
-int     print_flags_str(t_flags flags, va_list args)
-{
-        const char      *str;
-        int     printed;
-        int     len;
-
-        printed = 0;
-        str = va_arg(args, char *);
-        if (!str)
-        {
-                ft_putstr_fd("(null)", 1);
-                return (6);
-        }
-        len = ft_strlen(str);
-        if (flags.precision >= 0)
-                len = flags.precision;
-        if (flags.padding > len)
-        {
-                if (flags.minus)
-                {
-                        printed += write(1, str, len);
-                        printed += print_nchar(' ', flags.padding - len);
-                        return (printed);
-                }
-                printed += print_nchar(' ', flags.padding - len);
-                printed += write(1, str, len);
-                return (printed);
-        }
-        printed += write(1, str, len);
-        return (printed);
-}
-
-int     print_nbase(unsigned long num, char *base, t_flags flags)
-{
-        unsigned long     base_len;
-        int     printed;
-        
-        base_len = ft_strlen(base);
-        printed = 0;
-        if (num >= base_len)
-                printed += print_nbase(num / base_len, base, flags);
-        printed += write(1, &base[num % base_len], 1);
-        return (printed);
-}
-
-size_t  num_len_base(long long num, int base_len)
-{
-        size_t  size;
-
-        size = 0;
-        if (num < 0)
-        {
-                size++;
-                num = -num;
-        }
-        while (num > 0)
-        {
-                num = num / base_len;
-                size++; 
-        }
-        return (size);
-}
-
-int     print_flags_unbase(t_flags flags, unsigned long num, char *base)
-{
-        int     printed;
-        int     len;
-
-        printed = 0;
-        len = num_len_base(num, ft_strlen(base));
-        if (flags.specifier == 'p' && num == 0)
-        {
-                ft_putstr_fd("(nil)", 1);
-                return (5);               
-        }
-        if (flags.hash && (flags.specifier == 'x' || flags.specifier == 'X'))
-                len += 2;
-        if ((flags.hash && (flags.specifier == 'x')) || flags.specifier == 'p')
-                printed += write(1, "0x", 2);
-        else if (flags.hash && (flags.specifier == 'X'))
-                printed += write(1, "0X", 2);
-        if (flags.padding > len)
-        {
-                if (flags.minus)
-                {
-                        printed += print_nbase(num, base, flags);
-                        printed += print_nchar(' ', flags.padding - len);
-                        return (printed);
-                }
-                if (flags.zero)
-                        printed += print_nchar('0', flags.padding - len);
-                else
-                        printed += print_nchar(' ', flags.padding - len);
-                printed += print_nbase(num, base, flags);
-                return (printed);
-        }
-        printed += print_nbase(num, base, flags);
-        return (printed);
-}
-
-int     need_write_space(t_flags flags, int len)
-{
-        return (flags.space && (!(flags.padding > len) || (flags.minus && flags.padding > len)));
-}
-
-int     print_flags_snbase(t_flags flags, long num, char *base)
-{
-        int     printed;
-        int     len;
-
-        printed = 0;
-        len = num_len_base(num, ft_strlen(base));
-        if (need_write_space(flags, len))
-                printed += print_nchar(' ', 1);
-        if (!flags.zero && num < 0)
-        {
-                printed += print_nchar('-', 1);
-                num = -num;
-        }
-        if (flags.padding > len)
-        {
-                if (flags.minus)
-                {
-                        printed += print_nbase((unsigned long)num, base, flags);
-                        printed += print_nchar(' ', flags.padding - len - need_write_space(flags, len));
-                        return (printed);
-                }
-                if (flags.zero)
-                {
-                        if (num < 0)
-                                printed += print_nchar('-', 1);
-                        printed += print_nchar('0', flags.padding - len);
-                }
-                else
-                        printed += print_nchar(' ', flags.padding - len);
-                printed += print_nbase((unsigned long)num, base, flags);
-                return (printed);
-        }
-        printed += print_nbase((unsigned long)num, base, flags);
-        return (printed);
 }
 
 int     print_flags(t_flags flags, va_list args)
@@ -260,6 +98,7 @@ int     ft_printf(const char *format, ...)
         {
                 if (*format == '%')
                 {
+                        format++;
                         trait_flags(&format, &flags);
                         printed += print_flags(flags, args);
                 }

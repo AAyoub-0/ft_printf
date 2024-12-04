@@ -9,7 +9,9 @@ CFLAGS = -Wall -Wextra -Werror
 LIBFT_DIR = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-SRC = ft_printf.c
+SRC = 	ft_printf.c \
+	ft_printf_utils.c \
+	flags.c
 
 OBJ = $(SRC:.c=.o)
 
