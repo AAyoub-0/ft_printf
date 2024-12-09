@@ -6,7 +6,7 @@
 /*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 18:22:42 by aboumall          #+#    #+#             */
-/*   Updated: 2024/12/04 13:48:53 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/12/09 20:28:39 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,47 +37,42 @@ int	get_number(const char **str)
 	return (result);
 }
 
-int     write_padding_str(t_flags flags, char *str, int len)
+int	write_padding_str(t_flags flags, char *str, int len)
 {
-        int     printed;
+	int	printed;
 
-        printed = 0;
-        if (flags.minus)
-        {
-                printed += write(1, str, len);
-                printed += print_nchar(' ', flags.padding - len);
-                return (printed);
-        }
-        printed += print_nchar(' ', flags.padding - len);
-        printed += write(1, str, len);
-        return (printed);
+	printed = 0;
+	if (flags.minus)
+	{
+		printed += write(1, str, len);
+		printed += print_nchar(' ', flags.padding - len);
+		return (printed);
+	}
+	printed += print_nchar(' ', flags.padding - len);
+	printed += write(1, str, len);
+	return (printed);
 }
 
-int     need_write_space(t_flags flags, int len)
+int	write_padding_num(t_flags flags, unsigned long num, char *base, int len)
 {
-        return (flags.space && (!(flags.padding > len) || (flags.minus && flags.padding > len)));
-}
+	int printed;
+	size_t padding_len;
 
-int    write_padding_num(t_flags flags, unsigned long num, char *base, int len)
-{
-        int     printed;
-        size_t  padding_len;
-        
-        printed = 0;
-        if (flags.precision != 'i' || flags.precision != 'd')
-                padding_len = flags.padding - len - need_write_space(flags, len);
+	printed = 0;
+        if (flags.zero && flags.precision)
+                padding_len = flags.padding - len - flags.precision;
         else
                 padding_len = flags.padding - len;
-        if (flags.minus)
-        {
-                printed += print_nbase(num, base, flags);
-                printed += print_nchar(' ', padding_len);
-                return (printed);
-        }
-        if (flags.zero)
-                printed += print_nchar('0', flags.padding - len);
-        else
-                printed += print_nchar(' ', flags.padding - len);
-        printed += print_nbase(num, base, flags);
-        return (printed);
+	if (flags.minus)
+	{
+		printed += print_nbase(num, base, flags);
+		printed += print_nchar(' ', padding_len);
+		return (printed);
+	}
+	if (flags.zero)
+		printed += print_nchar('0', flags.padding - len);
+	else
+		printed += print_nchar(' ', flags.padding - len);
+	printed += print_nbase(num, base, flags);
+	return (printed);
 }

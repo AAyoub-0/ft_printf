@@ -6,7 +6,7 @@
 /*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 14:30:22 by aboumall          #+#    #+#             */
-/*   Updated: 2024/12/04 13:40:09 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/12/09 20:29:10 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,121 +110,128 @@ int     ft_printf(const char *format, ...)
         return (printed);
 }
 
-// int main()
-// {
-//         int     ft_result;
-//         int     result;
-//         // char    world[] = "World"; 
-//         // char    w = 'w';
-//         // int     psn = 255;
-//         // int     nsn = -255;
-//         // unsigned int    pun = -255;
-//         // unsigned int    sun = INT_MAX;
+int main()
+{
+        int     ft_result;
+        int     result;
+        // char    world[] = "World"; 
+        // char    w = 'w';
+        int     psn = 255;
+        // int     nsn = -255;
+        // unsigned int    pun = -255;
+        // unsigned int    sun = INT_MAX;
 
-//         // puts("--------- Char test ----------\n");
-//         // result = printf("Hello %corld\n", w);
-//         // ft_result = ft_printf("Hello %corld\n", w);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        puts("--------- Test with invalid specifier ----------\n");
+        result = printf("Hello start>%.8d<end\n", psn);
+        ft_result = ft_printf("Hello start>%.8d<end\n", psn);
+        printf("Result: %d\n", result);
+        printf("Ft_Result: %d\n", ft_result);
+        puts("------------------------------\n");
 
-//         // puts("--------- String test ----------\n");
-//         // result = printf("Hello %s\n", world);
-//         // ft_result = ft_printf("Hello %s\n", world);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Char test ----------\n");
+        // result = printf("Hello %corld\n", w);
+        // ft_result = ft_printf("Hello %corld\n", w);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Int test ----------\n");
-//         // result = printf("Hello %d\n", INT_MIN);
-//         // ft_result = ft_printf("Hello %d\n", INT_MIN);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- String test ----------\n");
+        // result = printf("Hello %s\n", world);
+        // ft_result = ft_printf("Hello %s\n", world);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Unsigned Int test ----------\n");
-//         // result = printf("Hello %d\n", nsn);
-//         // ft_result = ft_printf("Hello %d\n", nsn);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Int test ----------\n");
+        // result = printf("Hello %d\n", INT_MIN);
+        // ft_result = ft_printf("Hello %d\n", INT_MIN);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Unsigned Int test ----------\n");
-//         // result = printf("Hello %u\n", pun);
-//         // ft_result = ft_printf("Hello %u\n", pun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Unsigned Int test ----------\n");
+        // result = printf("Hello %d\n", nsn);
+        // ft_result = ft_printf("Hello %d\n", nsn);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Unsigned Int test ----------\n");
-//         // result = printf("Hello %u\n", sun);
-//         // ft_result = ft_printf("Hello %u\n", sun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Unsigned Int test ----------\n");
+        // result = printf("Hello %u\n", pun);
+        // ft_result = ft_printf("Hello %u\n", pun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Hex test ----------\n");
-//         // result = printf("Hello %x\n", sun);
-//         // ft_result = ft_printf("Hello %x\n", sun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Unsigned Int test ----------\n");
+        // result = printf("Hello %u\n", sun);
+        // ft_result = ft_printf("Hello %u\n", sun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Pointers test ----------\n");
-//         // result = printf("Hello %p<end\n", &sun);
-//         // ft_result = ft_printf("Hello %p<end\n", &sun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Hex test ----------\n");
+        // result = printf("Hello %x\n", sun);
+        // ft_result = ft_printf("Hello %x\n", sun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Pointers test ----------\n");
-//         // result = printf("Hello %p<end\n", (void *)LONG_MAX);
-//         // ft_result = ft_printf("Hello %p<end\n", LONG_MAX);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Pointers test ----------\n");
+        // result = printf("Hello %p<end\n", &sun);
+        // ft_result = ft_printf("Hello %p<end\n", &sun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Test with multiple flags ----------\n");
-//         // result = printf("Hello %10.5d<end\n", sun);
-//         // ft_result = ft_printf("Hello %10.5d<end\n", sun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Pointers test ----------\n");
+        // result = printf("Hello %p<end\n", (void *)LONG_MAX);
+        // ft_result = ft_printf("Hello %p<end\n", LONG_MAX);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Test with multiple flags ----------\n");
-//         // result = printf("Hello %-10.5d<end\n", sun);
-//         // ft_result = ft_printf("Hello %-10.5d<end\n", sun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Test with multiple flags ----------\n");
+        // result = printf("Hello %10.5d<end\n", sun);
+        // ft_result = ft_printf("Hello %10.5d<end\n", sun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Test with multiple flags ----------\n");
-//         // result = printf("Hello %10.5u<end\n", sun);
-//         // ft_result = ft_printf("Hello %10.5u<end\n", sun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Test with multiple flags ----------\n");
+        // result = printf("Hello %-10.5d<end\n", sun);
+        // ft_result = ft_printf("Hello %-10.5d<end\n", sun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Test with multiple flags ----------\n");
-//         // result = printf("Hello %-10.5u<end\n", sun);
-//         // ft_result = ft_printf("Hello %-10.5u<end\n", sun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Test with multiple flags ----------\n");
+        // result = printf("Hello %10.5u<end\n", sun);
+        // ft_result = ft_printf("Hello %10.5u<end\n", sun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Test with multiple flags ----------\n");
-//         // result = printf("Hello %-#50.5x<end\n", sun);
-//         // ft_result = ft_printf("Hello %-#50.5x<end\n", sun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Test with multiple flags ----------\n");
+        // result = printf("Hello %-10.5u<end\n", sun);
+        // ft_result = ft_printf("Hello %-10.5u<end\n", sun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         // puts("--------- Test with invalid specifier ----------\n");
-//         // result = printf("Hello %50-.5i<end\n", sun);
-//         // ft_result = ft_printf("Hello %50-.5i<end\n", sun);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+        // puts("--------- Test with multiple flags ----------\n");
+        // result = printf("Hello %-#50.5x<end\n", sun);
+        // ft_result = ft_printf("Hello %-#50.5x<end\n", sun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
 
-//         return (0);
-// }
+        // puts("--------- Test with invalid specifier ----------\n");
+        // result = printf("Hello %50-.5i<end\n", sun);
+        // ft_result = ft_printf("Hello %50-.5i<end\n", sun);
+        // printf("Result: %d\n", result);
+        // printf("Ft_Result: %d\n", ft_result);
+        // puts("------------------------------\n");
+
+        return (0);
+}

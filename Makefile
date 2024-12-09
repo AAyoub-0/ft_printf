@@ -19,8 +19,8 @@ all: $(NAME)
 
 $(NAME): $(OBJ) $(HEAD) $(LIBFT)
 	cp $(LIBFT) $(NAME)
-	ar rcs $(NAME) $(OBJ)
-# $(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT)
+# ar rcs $(NAME) $(OBJ)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT)
 
 
 ./%.o: ./%.c $(HEAD) Makefile $(LIBFT)
