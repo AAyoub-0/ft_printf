@@ -18,9 +18,9 @@ OBJ = $(SRC:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJ) $(HEAD) $(LIBFT)
+        # $(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT)
 	cp $(LIBFT) $(NAME)
-# ar rcs $(NAME) $(OBJ)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT)
+	ar rcs $(NAME) $(OBJ)
 
 
 ./%.o: ./%.c $(HEAD) Makefile $(LIBFT)

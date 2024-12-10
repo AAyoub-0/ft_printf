@@ -6,7 +6,7 @@
 /*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 18:22:42 by aboumall          #+#    #+#             */
-/*   Updated: 2024/12/09 20:28:39 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/12/10 19:45:42 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,16 @@ int	write_padding_str(t_flags flags, char *str, int len)
 	return (printed);
 }
 
-int	write_padding_num(t_flags flags, unsigned long num, char *base, int len)
+int	write_padding_num(t_flags flags, unsigned long num, char *base, int len, int is_negative)
 {
 	int printed;
+        int hash_padding;
 	size_t padding_len;
 
 	printed = 0;
+        hash_padding = 0;
+        if (flags.hash)
+                hash_padding = 2;
         if (flags.zero && flags.precision)
                 padding_len = flags.padding - len - flags.precision;
         else
@@ -69,10 +73,22 @@ int	write_padding_num(t_flags flags, unsigned long num, char *base, int len)
 		printed += print_nchar(' ', padding_len);
 		return (printed);
 	}
-	if (flags.zero)
+        if (flags.padding && !flags.precision && !flags.zero)
+                printed += print_nchar(' ', flags.padding - len);
+        if (flags.padding && flags.precision && flags.padding > flags.precision && flags.padding > len)
+		printed += print_nchar(' ', flags.padding - flags.precision - hash_padding - is_negative);
+        if (flags.hash && (flags.specifier == 'x' || flags.specifier == 'X'))
+		len += 2;
+	if ((flags.hash && (flags.specifier == 'x')) || flags.specifier == 'p')
+		printed += write(1, "0x", 2);
+	if (flags.hash && (flags.specifier == 'X'))
+		printed += write(1, "0X", 2);
+        if (is_negative)
+                printed += print_nchar('-', 1);
+        if (flags.zero && flags.padding && !flags.precision)
 		printed += print_nchar('0', flags.padding - len);
-	else
-		printed += print_nchar(' ', flags.padding - len);
+	if (flags.precision)
+		printed += print_nchar('0', flags.precision - len + hash_padding + is_negative);
 	printed += print_nbase(num, base, flags);
 	return (printed);
 }

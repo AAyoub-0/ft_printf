@@ -6,7 +6,7 @@
 /*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 14:24:25 by aboumall          #+#    #+#             */
-/*   Updated: 2024/12/09 19:55:16 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/12/10 19:32:26 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ size_t		num_len_base(long long num, int base_len);
 void		set_flags(t_flags *flags);
 int			get_number(const char **str);
 int			write_padding_num(t_flags flags, unsigned long num, char *base,
-				int len);
+				int len, int is_negative);
 int			write_padding_str(t_flags flags, char *str, int len);
 int			print_flags_unbase(t_flags flags, unsigned long num, char *base);
 int			print_nbase(unsigned long num, char *base, t_flags flags);

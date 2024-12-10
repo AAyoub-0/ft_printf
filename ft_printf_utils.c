@@ -6,7 +6,7 @@
 /*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 18:24:44 by aboumall          #+#    #+#             */
-/*   Updated: 2024/12/09 20:13:44 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/12/10 19:33:48 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,14 +72,8 @@ int	print_flags_unbase(t_flags flags, unsigned long num, char *base)
 		ft_putstr_fd("(nil)", 1);
 		return (5);
 	}
-	if (flags.hash && (flags.specifier == 'x' || flags.specifier == 'X'))
-		len += 2;
-	if ((flags.hash && (flags.specifier == 'x')) || flags.specifier == 'p')
-		printed += write(1, "0x", 2);
-	else if (flags.hash && (flags.specifier == 'X'))
-		printed += write(1, "0X", 2);
-	if (flags.padding > len)
-		printed += write_padding_num(flags, num, base, len);
+	if (flags.padding > len || flags.precision)
+		printed += write_padding_num(flags, num, base, len, 0);
         else
 	        printed += print_nbase(num, base, flags);
 	return (printed);
@@ -89,19 +83,21 @@ int	print_flags_snbase(t_flags flags, long num, char *base)
 {
 	int printed;
 	int len;
+        int is_negative;
 
 	printed = 0;
+        is_negative = 0;
 	len = num_len_base(num, ft_strlen(base));
 	if ((flags.space && (!(flags.padding > len) || (flags.minus
 					&& flags.padding > len))))
 		printed += print_nchar(' ', 1);
 	if (num < 0)
 	{
-		printed += print_nchar('-', 1);
 		num = -num;
+                is_negative = 1;
 	}
-	if (flags.padding > len)
-		printed += write_padding_num(flags, num, base, len);
+	if (flags.padding > len  || flags.precision)
+		printed += write_padding_num(flags, num, base, len, is_negative);
         else
 	        printed += print_nbase(num, base, flags);
 	return (printed);
