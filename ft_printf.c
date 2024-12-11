@@ -6,28 +6,28 @@
 /*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 14:30:22 by aboumall          #+#    #+#             */
-/*   Updated: 2024/12/10 19:40:48 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/12/11 13:45:37 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-size_t  num_len_base(long long num, int base_len)
+size_t	num_len_base(long long num, int base_len)
 {
-        size_t  size;
+	size_t	size;
 
-        size = 0;
-        if (num < 0)
-        {
-                size++;
-                num = -num;
-        }
-        while (num > 0)
-        {
-                num = num / base_len;
-                size++; 
-        }
-        return (size);
+	size = 0;
+	if (num < 0)
+	{
+		size++;
+		num = -num;
+	}
+	while (num > 0)
+	{
+		num = num / base_len;
+		size++;
+	}
+	return (size);
 }
 
 int	is_flag(char c)
@@ -57,76 +57,80 @@ void	trait_flags(const char **str, t_flags *flags)
 	}
 	if (ft_isdigit(*(*str)))
 		flags->padding = get_number(str);
-        if (*(*str) == '.')
-        {
-                (*str)++;
-		flags->precision = get_number(str);        
-        }
+	if (*(*str) == '.')
+	{
+		(*str)++;
+		flags->precision = get_number(str);
+	}
 	flags->specifier = *(*str);
 }
 
-int     print_flags(t_flags flags, va_list args)
+int	print_flags(t_flags flags, va_list args)
 {
-        if (flags.specifier == '%')
-                return (print_nchar('%', 1));
-        if (flags.specifier == 'c')
-                return (print_nchar((char)va_arg(args, int), 1));
-        if (flags.specifier == 's')
-                return (print_flags_str(flags, args));
-        if (flags.specifier == 'd' || flags.specifier == 'i')
-                return (print_flags_snbase(flags, va_arg(args, int), "0123456789"));
-        if (flags.specifier == 'u')
-                return (print_flags_unbase(flags, va_arg(args, unsigned int), "0123456789"));
-        if (flags.specifier == 'x')
-                return (print_flags_unbase(flags, va_arg(args, unsigned int), "0123456789abcdef"));
-        if (flags.specifier == 'X')
-                return (print_flags_unbase(flags, va_arg(args, unsigned int), "0123456789ABCDEF"));
-        if (flags.specifier == 'p')
-                return (print_flags_unbase(flags, (unsigned long)va_arg(args, void *), "0123456789abcdef"));
-        return (0);
+	if (flags.specifier == '%')
+		return (print_nchar('%', 1));
+	if (flags.specifier == 'c')
+		return (print_nchar((char)va_arg(args, int), 1));
+	if (flags.specifier == 's')
+		return (print_flags_str(flags, args));
+	if (flags.specifier == 'd' || flags.specifier == 'i')
+		return (print_flags_snbase(flags, va_arg(args, int), "0123456789"));
+	if (flags.specifier == 'u')
+		return (print_flags_unbase(flags, va_arg(args, unsigned int),
+				"0123456789"));
+	if (flags.specifier == 'x')
+		return (print_flags_unbase(flags, va_arg(args, unsigned int),
+				"0123456789abcdef"));
+	if (flags.specifier == 'X')
+		return (print_flags_unbase(flags, va_arg(args, unsigned int),
+				"0123456789ABCDEF"));
+	if (flags.specifier == 'p')
+		return (print_flags_unbase(flags, (unsigned long)va_arg(args, void *),
+				"0123456789abcdef"));
+	return (0);
 }
 
-int     ft_printf(const char *format, ...)
+int	ft_printf(const char *format, ...)
 {
-        va_list args;
-        t_flags flags;
-        int     printed;
+	va_list	args;
+	t_flags	flags;
+	int		printed;
 
-        va_start(args, format);
-        printed = 0;
-        while (*format)
-        {
-                if (*format == '%')
-                {
-                        format++;
-                        trait_flags(&format, &flags);
-                        printed += print_flags(flags, args);
-                }
-                else
-                        printed += write(1, format, 1);
-                format++;
-        }
-        va_end(args);
-        return (printed);
+	va_start(args, format);
+	printed = 0;
+	while (*format)
+	{
+		if (*format == '%')
+		{
+			format++;
+			trait_flags(&format, &flags);
+			printed += print_flags(flags, args);
+		}
+		else
+			printed += write(1, format, 1);
+		format++;
+	}
+	va_end(args);
+	return (printed);
 }
 
 // int main()
 // {
 //         int     ft_result;
 //         int     result;
-//         // char    world[] = "World"; 
+//         // char    world[] = "World";
 //         // char    w = 'w';
-//         // int     psn = -255;
+//         int     psn = -255;
 //         // int     nsn = -255;
 //         // unsigned int    pun = -255;
-//         unsigned int    sun = INT_MAX;
+//         // unsigned int    sun = INT_MAX;
 
-//         // puts("--------- Test with invalid specifier ----------\n");
-//         // result = printf("Hello start>%015.8i<end\n", psn);
-//         // ft_result = ft_printf("Hello start>%015.8i<end\n", psn);
-//         // printf("Result: %d\n", result);
-//         // printf("Ft_Result: %d\n", ft_result);
-//         // puts("------------------------------\n");
+//         puts("--------- Test with invalid specifier ----------\n");
+//         result = printf("Hello start>%i<end\n", psn);
+//         ft_result = ft_printf("Hello start>%i<end\n", psn);
+//         printf("Result: %d\n", result);
+//         printf("Ft_Result: %d\n", ft_result);
+//         puts("------------------------------\n");
 
 //         // puts("--------- Char test ----------\n");
 //         // result = printf("Hello %corld\n", w);
@@ -191,12 +195,12 @@ int     ft_printf(const char *format, ...)
 //         // printf("Ft_Result: %d\n", ft_result);
 //         // puts("------------------------------\n");
 
-//         puts("--------- Test with multiple flags ----------\n");
-//         result = printf("Hello %10.5d<end\n", sun);
-//         ft_result = ft_printf("Hello %10.5d<end\n", sun);
-//         printf("Result: %d\n", result);
-//         printf("Ft_Result: %d\n", ft_result);
-//         puts("------------------------------\n");
+//         // puts("--------- Test with multiple flags ----------\n");
+//         // result = printf("Hello %10.5d<end\n", sun);
+//         // ft_result = ft_printf("Hello %10.5d<end\n", sun);
+//         // printf("Result: %d\n", result);
+//         // printf("Ft_Result: %d\n", ft_result);
+//         // puts("------------------------------\n");
 
 //         // puts("--------- Test with multiple flags ----------\n");
 //         // result = printf("Hello %-10.5d<end\n", sun);

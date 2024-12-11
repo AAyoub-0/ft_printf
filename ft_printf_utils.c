@@ -6,7 +6,7 @@
 /*   By: aboumall <aboumall@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/03 18:24:44 by aboumall          #+#    #+#             */
-/*   Updated: 2024/12/10 19:33:48 by aboumall         ###   ########.fr       */
+/*   Updated: 2024/12/11 13:46:46 by aboumall         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,17 +55,20 @@ int	print_flags_str(t_flags flags, va_list args)
 		len = flags.precision;
 	if (flags.padding > len)
 		write_padding_str(flags, str, len);
-        else
-	        printed += write(1, str, len);
+	else
+		printed += write(1, str, len);
 	return (printed);
 }
 
 int	print_flags_unbase(t_flags flags, unsigned long num, char *base)
 {
-	int	printed;
-	int	len;
+	int		printed;
+	int		len;
+	t_num	tnum;
 
 	printed = 0;
+	tnum.num = num;
+	tnum.is_negative = 0;
 	len = num_len_base(num, ft_strlen(base));
 	if (flags.specifier == 'p' && num == 0)
 	{
@@ -73,20 +76,20 @@ int	print_flags_unbase(t_flags flags, unsigned long num, char *base)
 		return (5);
 	}
 	if (flags.padding > len || flags.precision)
-		printed += write_padding_num(flags, num, base, len, 0);
-        else
-	        printed += print_nbase(num, base, flags);
+		printed += write_padding_num(flags, tnum, base, len);
+	else
+		printed += print_nbase(num, base, flags);
 	return (printed);
 }
 
 int	print_flags_snbase(t_flags flags, long num, char *base)
 {
-	int printed;
-	int len;
-        int is_negative;
+	int		printed;
+	int		len;
+	t_num	tnum;
 
 	printed = 0;
-        is_negative = 0;
+	tnum.is_negative = 0;
 	len = num_len_base(num, ft_strlen(base));
 	if ((flags.space && (!(flags.padding > len) || (flags.minus
 					&& flags.padding > len))))
@@ -94,11 +97,12 @@ int	print_flags_snbase(t_flags flags, long num, char *base)
 	if (num < 0)
 	{
 		num = -num;
-                is_negative = 1;
+		tnum.is_negative = 1;
 	}
-	if (flags.padding > len  || flags.precision)
-		printed += write_padding_num(flags, num, base, len, is_negative);
-        else
-	        printed += print_nbase(num, base, flags);
+	tnum.num = num;
+	if (flags.padding > len || flags.precision)
+		printed += write_padding_num(flags, tnum, base, len);
+	else
+		printed += print_nbase(num, base, flags);
 	return (printed);
 }
